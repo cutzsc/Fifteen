@@ -10,7 +10,7 @@ project "Fifteen"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 	targetdir("bin/" .. outputdir .. "/%{prj.name}")
 	objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
 	pchheader "poorpch.h"
@@ -36,10 +36,7 @@ project "Fifteen"
 
 	links {
 		"winmm.lib",
-		"sfml-system-s.lib",
-		"opengl32.lib",
-		"gdi32.lib",
-		"sfml-window-s.lib"
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
@@ -49,8 +46,16 @@ project "Fifteen"
 		defines { "PR_DEBUG" }
 		runtime "Debug"
 		symbols "On"
+		links {
+			"sfml-system-s-d.lib",
+			"sfml-window-s-d.lib"
+		}
 
 	filter "configurations:Release"
 		defines { "PR_RELEASE" }
 		runtime "Release"
 		optimize "On"
+		links {
+			"sfml-system-s.lib",
+			"sfml-window-s.lib"
+		}
