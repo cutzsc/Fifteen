@@ -6,19 +6,19 @@ workspace "Fifteen"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Fifteen"
-	location "Code"
+	location "Source"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "off"
+	--staticruntime "on"
 	targetdir("bin/" .. outputdir .. "/%{prj.name}")
 	objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
 	pchheader "poorpch.h"
-	pchsource "Code/src/poorpch.cpp"
+	pchsource "Source/src/poorpch.cpp"
 
 	files {
-		"Code/src/**.h",
-		"Code/src/**.cpp"
+		"Source/src/**.h",
+		"Source/src/**.cpp"
 	}
 
 	defines {
@@ -26,17 +26,24 @@ project "Fifteen"
 	}
 
 	includedirs {
-		"Code/src",
-		"Code/3rdparty/SFML/include"
+		"Source/src",
+		"Source/3rdparty/SFML/include"
 	}
 
 	libdirs {
-		"Code/3rdparty/SFML/lib"
+		"Source/3rdparty/SFML/lib"
 	}
 
 	links {
 		"winmm.lib",
-		"opengl32.lib"
+		"opengl32.lib",
+		"freetype.lib",
+		"gdi32.lib",
+		"flac.lib",
+		"vorbisenc.lib",
+		"vorbisfile.lib",
+		"vorbis.lib",
+		"ogg.lib"
 	}
 
 	filter "system:windows"
@@ -48,7 +55,9 @@ project "Fifteen"
 		symbols "On"
 		links {
 			"sfml-system-s-d.lib",
-			"sfml-window-s-d.lib"
+			"sfml-window-s-d.lib",
+			"sfml-graphics-s-d.lib",
+			"sfml-audio-s-d.lib"
 		}
 
 	filter "configurations:Release"
@@ -57,5 +66,7 @@ project "Fifteen"
 		optimize "On"
 		links {
 			"sfml-system-s.lib",
-			"sfml-window-s.lib"
+			"sfml-window-s.lib",
+			"sfml-graphics-s.lib",
+			"sfml-audio-s.lib"
 		}
