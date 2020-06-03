@@ -3,8 +3,15 @@
 
 #include "Base.h"
 
-void Level::Load(const sf::Texture& texture, const LevelParams& params)
+#include "Random.h"
+
+void Level::Load(const sf::Texture& texture, const sf::Font& font, const LevelParams& params)
 {
+	timeTxt.setFont(font);
+	timeTxt.setFillColor(sf::Color::White);
+	timeTxt.setCharacterSize(20);
+	timeTxt.setPosition(800.0f - 250.0f, 130.0f);
+
 	sprite.setTexture(texture);
 	sprite.setScale(params.Scale);
 	sprite.setOrigin(0.5f, 0.5f);
@@ -19,23 +26,93 @@ void Level::Load(const sf::Texture& texture, const LevelParams& params)
 				params.TexSize.x, params.TexSize.y);
 		}
 
-		positions[i].x = i % 4 * (params.TexSize.x * params.Scale.x + params.Offset.x);
-		positions[i].y = i / 4 * (params.TexSize.x * params.Scale.x + params.Offset.y);
+		positions[i].x = i % 4 * (params.TexSize.x * params.Scale.x + params.Offset.x) + 100;
+		positions[i].y = i / 4 * (params.TexSize.x * params.Scale.x + params.Offset.y) + 100;
 	}
+
+	Restart();
 }
 
 void Level::Restart()
 {
-	clock.restart();
+	timer.restart();
+	elapsed = 0.0f;
+
+	// TODO: GET RID OF THAT OVERHEAD
+
+	auto findEntity = [this](unsigned int slot) {
+		for (auto& entity : entities)
+			if (entity.Slot == slot)
+				return &entity;
+	};
+
+	for (unsigned int i = 0; i < 200; i++)
+	{
+		int dir = Random::NextInt(0, 4);
+		switch (dir)
+		{
+		case 0:
+		{
+			int slot = static_cast<int>(freeSlot) - 1;
+			if (slot > -1 && slot < 16)
+			{
+				Entity* entity = findEntity(slot);
+				unsigned int tempSlot = freeSlot;
+				freeSlot = entity->Slot;
+				entity->Slot = tempSlot;
+				break;
+			}
+		}
+		case 1:
+		{
+			int slot = static_cast<int>(freeSlot) + 1;
+			if (slot > -1 && slot < 16)
+			{
+				Entity* entity = findEntity(slot);
+				unsigned int tempSlot = freeSlot;
+				freeSlot = entity->Slot;
+				entity->Slot = tempSlot;
+				break;
+			}
+		}
+		case 2:
+		{
+			int slot = static_cast<int>(freeSlot) - 4;
+			if (slot > -1 && slot < 16)
+			{
+				Entity* entity = findEntity(slot);
+				unsigned int tempSlot = freeSlot;
+				freeSlot = entity->Slot;
+				entity->Slot = tempSlot;
+				break;
+			}
+		}
+		case 3:
+		{
+			int slot = static_cast<int>(freeSlot) +4;
+			if (slot > -1 && slot < 16)
+			{
+				Entity* entity = findEntity(slot);
+				unsigned int tempSlot = freeSlot;
+				freeSlot = entity->Slot;
+				entity->Slot = tempSlot;
+				break;
+			}
+		}
+		}
+	}
 }
 
 void Level::Update(float deltaTime)
 {
 	if (IsGameOver())
 	{
-		//clog("Game Over");
+		
 	}
-
+	else
+	{
+		elapsed = timer.getElapsedTime().asSeconds();
+	}
 }
 
 void Level::Render(sf::RenderWindow& window)
@@ -58,6 +135,14 @@ void Level::OnEvent(sf::Event& e)
 			Move({ (float)e.mouseButton.x, (float)e.mouseButton.y });
 		}
 	}
+}
+
+void Level::OnGUI(sf::RenderWindow& window)
+{
+	std::stringstream ss;
+	ss << "Elapsed: " << static_cast<int>(elapsed) << "s";
+	timeTxt.setString(ss.str());
+	window.draw(timeTxt);
 }
 
 void Level::Move(const sf::Vector2f& mouse)

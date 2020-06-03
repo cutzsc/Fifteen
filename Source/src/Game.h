@@ -17,11 +17,12 @@ public:
 		texture.loadFromFile("assets/numbers.png");
 		font.loadFromFile("assets/Montserrat-Regular.otf");
 		text.setFont(font);
-		text.setFont(font);
 		text.setFillColor(sf::Color::White);
 		text.setCharacterSize(20);
+		text.setString("Space - to restart");
+		text.setPosition({ static_cast<float>(window.getSize().x - 250.0f), 100.0f });
 
-		level.Load(texture, { { 32, 32 }, {2.0f, 2.0f }, { 10.0f, 10.0f } });
+		level.Load(texture, font, { { 32, 32 }, {2.0f, 2.0f }, { 10.0f, 10.0f } });
 	}
 
 	~Game()
@@ -81,6 +82,11 @@ private:
 		{
 		case sf::Event::Closed:
 			OnWindowClose(e);
+		case sf::Event::KeyReleased:
+			if (e.key.code == sf::Keyboard::Space)
+				level.Restart();
+			if (e.key.code == sf::Keyboard::Escape)
+				running = false;
 		}
 
 		level.OnEvent(e);
@@ -88,11 +94,9 @@ private:
 
 	void OnGUI()
 	{
-		text.setString(restartText);
-		text.setOrigin({ 1.0f, 0.0f });
-		int textWidth = static_cast<unsigned int>(restartText.length()) * text.getCharacterSize();
-		text.setPosition({ static_cast<float>(window.getSize().x - textWidth), 100.0f });
 		window.draw(text);
+
+		level.OnGUI(window);
 	}
 
 	void OnWindowClose(sf::Event& e)

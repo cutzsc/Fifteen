@@ -20,12 +20,13 @@ class Level
 {
 public:
 
-	void Load(const sf::Texture& texture, const LevelParams& params);
+	void Load(const sf::Texture& texture, const sf::Font& font, const LevelParams& params);
 	void Restart();
 
 	void Update(float deltaTime);
 	void Render(sf::RenderWindow& window);
 	void OnEvent(sf::Event& e);
+	void OnGUI(sf::RenderWindow& window);
 
 private:
 	bool IsGameOver();
@@ -33,7 +34,9 @@ private:
 	bool CanIMove(unsigned int slot);
 
 private:
-	sf::Clock clock;
+	sf::Text timeTxt;
+	float elapsed = 0;
+	sf::Clock timer;
 	sf::Sprite sprite;
 	Entity entities[15];
 	sf::Vector2f positions[16];
